@@ -24,15 +24,4 @@ func SetupAuthRoutes(rg *gin.RouterGroup, cfg *config.Config) {
 		protected.GET("/me", authController.Me)
 	}
 
-	// --- Admin-only routes: valid JWT + "admin" role required ---
-	admin := rg.Group("/admin")
-	admin.Use(middleware.JWTAuthMiddleware(cfg))
-	admin.Use(middleware.AdminOnlyMiddleware())
-	{
-		// Placeholder — admin routes will be added in future tasks
-		admin.GET("/ping", func(c *gin.Context) {
-			c.JSON(200, gin.H{"message": "admin access confirmed"})
-		})
-	}
 }
-

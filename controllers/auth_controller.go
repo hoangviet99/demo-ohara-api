@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"demodiqit_api/config"
+	"demodiqit_api/helpers/context"
 	"demodiqit_api/helpers/crypt"
 	"demodiqit_api/helpers/respond"
-	"demodiqit_api/middleware"
 	"demodiqit_api/models"
 	"demodiqit_api/request"
 
@@ -89,8 +89,8 @@ func (ac *AuthController) Login(c *gin.Context) {
 
 // Me returns the profile of the currently authenticated user.
 func (ac *AuthController) Me(c *gin.Context) {
-	val, exists := c.Get(middleware.CurrentUserKey)
-	if !exists {
+	user := contextHelper.GetUserFromContext(c)
+	if user.ID == 0 {
 		c.JSON(http.StatusUnauthorized, respond.ErrorRespond{
 			Code:    "AUTH-005",
 			Message: "Unauthorized",
@@ -98,22 +98,14 @@ func (ac *AuthController) Me(c *gin.Context) {
 		return
 	}
 
-	claims, ok := val.(*crypt.JWTClaim)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, respond.ErrorRespond{
-			Code:    "AUTH-006",
-			Message: "Invalid token claims",
-		})
-		return
-	}
-
 	c.JSON(http.StatusOK, respond.SuccessRespond{
 		Message: "OK",
 		Data: gin.H{
-			"user_id":  claims.UserID,
-			"username": claims.Username,
-			"email":    claims.Email,
-			"roles":    claims.Roles,
+			"user_id":   user.ID,
+			"username":  user.Username,
+			"email":     user.Email,
+			"full_name": user.FullName,
+			"roles":     user.Roles,
 		},
 	})
 }
