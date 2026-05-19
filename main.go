@@ -47,9 +47,15 @@ func main() {
 	api := r.Group("/api/v1")
 	routes.SetupAuthRoutes(api, cfg)
 
+	api.Use(middleware.JWTAuthMiddleware(cfg))
+	routes.SetupUserRoutes(api, cfg)
+
 	// 7. Run the server
 	port := os.Getenv("PORT")
-	fmt.Println(fmt.Sprintf("Server is running at http://localhost:%s", port))
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Printf("Server is running at http://localhost:%s\n", port)
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
