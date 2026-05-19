@@ -10,9 +10,9 @@ import (
 // User represents the 'users' table in the database
 type User struct {
 	gorm.Model
-	Username string         `gorm:"unique;not null" json:"username"`
-	Password string         `gorm:"not null" json:"-"` // Do not return password in JSON
-	Email     string         `gorm:"unique;not null" json:"email"`
+	Username  string         `gorm:"not null" json:"username"`
+	Password  string         `gorm:"not null" json:"-"` // Do not return password in JSON
+	Email     string         `gorm:"not null" json:"email"`
 	FullName  string         `json:"full_name"`
 	Roles     pq.StringArray `gorm:"type:text[];default:'{}'" json:"roles"` // User authorization roles (multiple)
 	UserToken string         `gorm:"type:text" json:"user_token"`           // Store the latest JWT token
