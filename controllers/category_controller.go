@@ -335,9 +335,23 @@ func (cc *CategoryController) UpdateStatus(c *gin.Context) {
 
 // ListCommon handles GET /categories/list-common
 func (cc *CategoryController) ListCommon(c *gin.Context) {
-	var categories []models.Category
+	var req request.ListCommonCategoryRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		c.JSON(http.StatusBadRequest, respond.ErrorRespond{
+			Message: "Invalid query parameters",
+			Code:    "CATEGORY-018",
+		})
+		return
+	}
 
-	if err := config.DB.Model(&models.Category{}).Where("is_active = ?", true).Order("name asc").Find(&categories).Error; err != nil {
+	var categories []models.Category
+	query := config.DB.Model(&models.Category{})
+
+	if req.IsActive != nil {
+		query = query.Where("is_active = ?", *req.IsActive)
+	}
+
+	if err := query.Order("name asc").Find(&categories).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, respond.ErrorRespond{
 			Message: "Failed to fetch categories",
 			Code:    "CATEGORY-017",

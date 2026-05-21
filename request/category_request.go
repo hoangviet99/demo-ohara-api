@@ -11,6 +11,10 @@ type ListCategoryRequest struct {
 	IsActive *bool  `form:"is_active"`
 }
 
+type ListCommonCategoryRequest struct {
+	IsActive *bool `form:"is_active"`
+}
+
 type CreateCategoryRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Code     string `json:"code" binding:"required"`
